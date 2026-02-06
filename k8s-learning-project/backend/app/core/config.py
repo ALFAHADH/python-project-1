@@ -1,6 +1,6 @@
 from functools import lru_cache
+import json
 
-from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -28,14 +28,19 @@ class Settings(BaseSettings):
 
     DEFAULT_ADMIN_EMAIL: str = "admin@k8s-learning.local"
     DEFAULT_ADMIN_PASSWORD: str = "admin12345"
-    CORS_ORIGINS: list[str] = ["http://localhost:8080"]
+    CORS_ORIGINS: str = "http://localhost:8080"
 
-    @field_validator("CORS_ORIGINS", mode="before")
-    @classmethod
-    def parse_cors_origins(cls, value: str | list[str]) -> list[str]:
-        if isinstance(value, str):
-            return [item.strip() for item in value.split(",") if item.strip()]
-        return value
+    @property
+    def cors_origins(self) -> list[str]:
+        value = self.CORS_ORIGINS.strip()
+        if not value:
+            return []
+        if value.startswith("["):
+            parsed = json.loads(value)
+            if not isinstance(parsed, list):
+                raise ValueError("CORS_ORIGINS JSON value must be a list")
+            return [str(item).strip() for item in parsed if str(item).strip()]
+        return [item.strip() for item in value.split(",") if item.strip()]
 
 
 @lru_cache
@@ -44,4 +49,3 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
-
