@@ -1,0 +1,90 @@
+stages:
+  - lint
+  - test
+  - build
+  - deploy
+
+variables:
+  DOCKER_TLS_CERTDIR: "/certs"
+  BACKEND_IMAGE: "$CI_REGISTRY_IMAGE/k8s-learning-backend"
+  FRONTEND_IMAGE: "$CI_REGISTRY_IMAGE/k8s-learning-frontend"
+
+lint:
+  stage: lint
+  image: python:3.11-slim
+  before_script:
+    - cd backend
+    - pip install --no-cache-dir -r requirements.txt
+  script:
+    - ruff check app tests
+
+test:
+  stage: test
+  image: python:3.11-slim
+  before_script:
+    - cd backend
+    - pip install --no-cache-dir -r requirements.txt
+  script:
+    - pytest -q tests
+
+build_backend:
+  stage: build
+  image: docker:27.4.0
+  services:
+    - docker:27.4.0-dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+  script:
+    - docker build -t "$BACKEND_IMAGE:$CI_COMMIT_SHA" -t "$BACKEND_IMAGE:latest" backend
+    - docker push "$BACKEND_IMAGE:$CI_COMMIT_SHA"
+    - docker push "$BACKEND_IMAGE:latest"
+
+build_frontend:
+  stage: build
+  image: docker:27.4.0
+  services:
+    - docker:27.4.0-dind
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" --password-stdin
+  script:
+    - docker build -t "$FRONTEND_IMAGE:$CI_COMMIT_SHA" -t "$FRONTEND_IMAGE:latest" frontend
+    - docker push "$FRONTEND_IMAGE:$CI_COMMIT_SHA"
+    - docker push "$FRONTEND_IMAGE:latest"
+
+deploy:
+  stage: deploy
+  image: bitnami/kubectl:1.31
+  needs:
+    - build_backend
+    - build_frontend
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  before_script:
+    - mkdir -p ~/.kube
+    - echo "$KUBE_CONFIG_DATA" | base64 -d > ~/.kube/config
+  script:
+    - kubectl apply -f k8s/namespaces/namespace.yaml
+    - kubectl apply -f k8s/rbac/backend-rbac.yaml
+    - kubectl apply -f k8s/backend/configmap.yaml
+    - kubectl apply -f k8s/backend/secret.yaml
+    - kubectl apply -f k8s/postgres/pvc.yaml
+    - kubectl apply -f k8s/postgres/service.yaml
+    - kubectl apply -f k8s/postgres/statefulset.yaml
+    - kubectl apply -f k8s/redis/service.yaml
+    - kubectl apply -f k8s/redis/deployment.yaml
+    - kubectl apply -f k8s/backend/deployment.yaml
+    - kubectl apply -f k8s/backend/worker-deployment.yaml
+    - kubectl apply -f k8s/backend/service.yaml
+    - kubectl apply -f k8s/backend/hpa.yaml
+    - kubectl apply -f k8s/frontend/deployment.yaml
+    - kubectl apply -f k8s/frontend/service.yaml
+    - kubectl apply -f k8s/monitoring/prometheus.yaml
+    - kubectl apply -f k8s/monitoring/grafana.yaml
+    - kubectl apply -f k8s/ingress/ingress.yaml
+    - kubectl -n k8s-learning set image deployment/backend-api backend="$BACKEND_IMAGE:$CI_COMMIT_SHA"
+    - kubectl -n k8s-learning set image deployment/backend-worker worker="$BACKEND_IMAGE:$CI_COMMIT_SHA"
+    - kubectl -n k8s-learning set image deployment/frontend-web frontend="$FRONTEND_IMAGE:$CI_COMMIT_SHA"
+    - kubectl -n k8s-learning rollout status deployment/backend-api --timeout=120s
+    - kubectl -n k8s-learning rollout status deployment/backend-worker --timeout=120s
+    - kubectl -n k8s-learning rollout status deployment/frontend-web --timeout=120s
+

@@ -1,0 +1,122 @@
+:root {
+  --bg: #0f172a;
+  --panel: #111827;
+  --panel-border: #1f2937;
+  --text: #e5e7eb;
+  --muted: #9ca3af;
+  --accent: #22c55e;
+  --danger: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: radial-gradient(circle at 20% 20%, #1e293b 0%, var(--bg) 65%);
+  color: var(--text);
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  background: color-mix(in srgb, var(--panel) 90%, black);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 10px;
+}
+
+p {
+  color: var(--muted);
+}
+
+.grid-two {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+form {
+  display: grid;
+  gap: 8px;
+}
+
+input,
+select,
+button {
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 10px;
+  background: #0b1220;
+  color: var(--text);
+}
+
+button {
+  cursor: pointer;
+  background: color-mix(in srgb, var(--accent) 35%, #0b1220);
+}
+
+.actions,
+.row-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.row-actions button[data-action="delete"] {
+  background: color-mix(in srgb, var(--danger) 35%, #0b1220);
+}
+
+.orders-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: grid;
+  gap: 10px;
+}
+
+.order-item {
+  display: grid;
+  gap: 10px;
+  background: #0b1220;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.order-item span {
+  display: inline-block;
+  margin-right: 10px;
+  color: var(--muted);
+}
+
+.output {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  min-height: 70px;
+  padding: 10px;
+  overflow-x: auto;
+  font-size: 13px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 14px;
+  }
+}
+

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: k8s-learning
+data:
+  PROJECT_NAME: "K8s Learning Order Platform"
+  API_PREFIX: "/api"
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+  ACCESS_TOKEN_EXPIRE_MINUTES: "60"
+  CORS_ORIGINS: "http://app.local,http://localhost:30080"
+
