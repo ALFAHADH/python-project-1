@@ -21,11 +21,13 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     version="1.0.0",
     openapi_url=f"{settings.API_PREFIX}/openapi.json",
+    docs_url=f"{settings.API_PREFIX}/docs",
+    redoc_url=f"{settings.API_PREFIX}/redoc",
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -78,4 +80,3 @@ def health_ready() -> dict[str, object]:
         raise HTTPException(status_code=503, detail="Redis is unavailable") from exc
 
     return {"status": "ready", "checks": checks}
-

@@ -9,6 +9,7 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "202602060001"
@@ -41,7 +42,19 @@ def upgrade() -> None:
         sa.Column("user_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
         sa.Column("title", sa.String(length=140), nullable=False),
         sa.Column("description", sa.Text(), nullable=True),
-        sa.Column("status", order_status, nullable=False, server_default="pending"),
+        sa.Column(
+            "status",
+            postgresql.ENUM(
+                "pending",
+                "processing",
+                "completed",
+                "canceled",
+                name="order_status",
+                create_type=False,
+            ),
+            nullable=False,
+            server_default="pending",
+        ),
         sa.Column("total_amount", sa.Numeric(10, 2), nullable=False),
         sa.Column("priority", sa.Integer(), nullable=False, server_default="3"),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
@@ -75,4 +88,3 @@ def downgrade() -> None:
 
     order_status = sa.Enum("pending", "processing", "completed", "canceled", name="order_status")
     order_status.drop(op.get_bind(), checkfirst=True)
-
