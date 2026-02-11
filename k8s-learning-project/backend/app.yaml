@@ -33,8 +33,8 @@ env_variables:
   ACCESS_TOKEN_EXPIRE_MINUTES: "60"
   SECRET_KEY: "CHANGE_ME_STRONG_SECRET"
 
-  # IMPORTANT: Password '#' encoded as %23
-  DATABASE_URL: "postgresql+psycopg2://postgres:Passwd123%23@/postgres?host=/cloudsql/alfahadh-practice:us-central1:python-test"
+  # IMPORTANT: URL-encode special chars in password (example: '@' -> %40, '#' -> %23)
+  DATABASE_URL: "postgresql+psycopg2://postgres:Alfahadh%401@/postgres?host=/cloudsql/alfahadh-practice:us-central1:python-test"
 
   REDIS_URL: "redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0"
   CELERY_BROKER_URL: "redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0"
