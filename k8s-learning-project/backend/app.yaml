@@ -1,6 +1,6 @@
 runtime: custom
 env: flex
-service: backend-api
+service: default
 
 # Override Docker CMD so App Engine uses the runtime-provided PORT.
 entrypoint: /bin/sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"
@@ -27,7 +27,9 @@ liveness_check:
   failure_threshold: 4
   success_threshold: 2
 
-# Replace placeholder values before deploy.
+# App Engine URL: https://alfahadh-practice.el.r.appspot.com
+# Cloud SQL connection name: alfahadh-practice:us-central1:python-test
+# Update DB user/password/db name below if they differ in your Cloud SQL setup.
 env_variables:
   PROJECT_NAME: "K8s Learning Order Platform"
   API_PREFIX: "/api"
@@ -35,13 +37,13 @@ env_variables:
   LOG_LEVEL: "INFO"
   ACCESS_TOKEN_EXPIRE_MINUTES: "60"
   SECRET_KEY: "CHANGE_ME_STRONG_SECRET"
-  DATABASE_URL: "postgresql+psycopg2://app_user:app_password@/app_db?host=/cloudsql/PROJECT_ID:REGION:INSTANCE"
+  DATABASE_URL: "postgresql+psycopg2://app_user:app_password@/app_db?host=/cloudsql/alfahadh-practice:us-central1:python-test"
   REDIS_URL: "redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0"
   CELERY_BROKER_URL: "redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0"
   CELERY_RESULT_BACKEND: "redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0"
   DEFAULT_ADMIN_EMAIL: "admin@k8s-learning.local"
   DEFAULT_ADMIN_PASSWORD: "admin12345"
-  CORS_ORIGINS: "https://PROJECT_ID.uc.r.appspot.com"
+  CORS_ORIGINS: "https://alfahadh-practice.el.r.appspot.com"
 
 beta_settings:
-  cloud_sql_instances: "PROJECT_ID:REGION:INSTANCE"
+  cloud_sql_instances: "alfahadh-practice:us-central1:python-test"
