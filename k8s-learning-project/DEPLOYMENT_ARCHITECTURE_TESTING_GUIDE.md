@@ -292,14 +292,14 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-Update `backend/.env` for VM-local services:
+Update `backend/.env` for VM deployment with your Cloud Redis:
 
 ```dotenv
 ENVIRONMENT=vm
 DATABASE_URL=postgresql+psycopg2://app_user:app_password@127.0.0.1:5432/app_db
-REDIS_URL=redis://127.0.0.1:6379/0
-CELERY_BROKER_URL=redis://127.0.0.1:6379/1
-CELERY_RESULT_BACKEND=redis://127.0.0.1:6379/2
+REDIS_URL=redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0
+CELERY_BROKER_URL=redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0
+CELERY_RESULT_BACKEND=redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0
 ```
 
 Run migrations + seed:
@@ -371,7 +371,7 @@ Access:
 
 ## 2.5 Google App Engine (backend service template)
 
-This repo now includes `app.yaml` at project root for App Engine Flexible.
+This repo includes `backend/app.yaml` for App Engine Flexible.
 
 Important:
 
@@ -386,13 +386,52 @@ Deploy:
 ```bash
 cd k8s-learning-project
 gcloud app create --region=us-central
-gcloud app deploy app.yaml
+gcloud app deploy backend/app.yaml
 gcloud app browse
 ```
 
 After deployment:
 
 - Backend docs: `https://<PROJECT_ID>.uc.r.appspot.com/api/docs`
+
+---
+
+## 2.6 Future reference: where Redis URL/credentials must be changed
+
+When Redis endpoint/username/password changes, update these files:
+
+1. `backend/.env.example`
+- `REDIS_URL`
+- `CELERY_BROKER_URL`
+- `CELERY_RESULT_BACKEND`
+
+2. `docker-compose.yml`
+- `backend.environment.REDIS_URL`
+- `backend.environment.CELERY_BROKER_URL`
+- `backend.environment.CELERY_RESULT_BACKEND`
+- `worker.environment.REDIS_URL`
+- `worker.environment.CELERY_BROKER_URL`
+- `worker.environment.CELERY_RESULT_BACKEND`
+
+3. `k8s/backend/secret.yaml`
+- base64-encoded values for:
+  - `REDIS_URL`
+  - `CELERY_BROKER_URL`
+  - `CELERY_RESULT_BACKEND`
+
+Encoding helper:
+
+```bash
+echo -n 'redis://default:<PASSWORD>@<HOST>:<PORT>/0' | base64
+```
+
+4. `backend/app.yaml` (App Engine)
+- `env_variables.REDIS_URL`
+- `env_variables.CELERY_BROKER_URL`
+- `env_variables.CELERY_RESULT_BACKEND`
+
+5. `backend/.env` (actual runtime env on VM/direct deployment)
+- same 3 variables as above.
 
 ---
 
@@ -491,13 +530,12 @@ Commands by method:
 
 Redis check commands:
 
-- Individual Docker/Compose:
+- With external Cloud Redis (recommended in your setup):
+  - `redis-cli -u "redis://default:<PASSWORD>@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0" --scan --pattern "orders:*"`
+  - `redis-cli -u "redis://default:<PASSWORD>@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0" TTL "orders:<USER_ID>:all:0:20"`
+- With local Redis container (if you still use it):
   - `docker exec -it redis redis-cli --scan --pattern "orders:*"`
   - `docker exec -it redis redis-cli TTL "orders:<USER_ID>:all:0:20"`
-- Kubernetes:
-  - `kubectl -n k8s-learning exec deploy/redis -- redis-cli --scan --pattern "orders:*"`
-- Direct code:
-  - `redis-cli --scan --pattern "orders:*"`
 
 ### 3.4 Authorization behavior test
 
@@ -541,4 +579,3 @@ Use these while running test scenarios:
   - `kubectl -n k8s-learning logs deployment/backend-worker -f`
 - Direct code:
   - run backend/worker in foreground or with `journalctl -u <service> -f`
-

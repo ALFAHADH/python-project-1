@@ -36,9 +36,9 @@ services:
       - ./backend/.env.example
     environment:
       DATABASE_URL: postgresql+psycopg2://app_user:app_password@postgres:5432/app_db
-      REDIS_URL: redis://redis:6379/0
-      CELERY_BROKER_URL: redis://redis:6379/1
-      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      REDIS_URL: redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0
+      CELERY_BROKER_URL: redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0
+      CELERY_RESULT_BACKEND: redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0
       ENVIRONMENT: docker
     command: >
       sh -c "alembic upgrade head &&
@@ -66,9 +66,9 @@ services:
       - ./backend/.env.example
     environment:
       DATABASE_URL: postgresql+psycopg2://app_user:app_password@postgres:5432/app_db
-      REDIS_URL: redis://redis:6379/0
-      CELERY_BROKER_URL: redis://redis:6379/1
-      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      REDIS_URL: redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0
+      CELERY_BROKER_URL: redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0
+      CELERY_RESULT_BACKEND: redis://default:yPsSqjxk1HCIN67kWe3DZvCdw9Vw84a6@redis-14642.c259.us-central1-2.gce.cloud.redislabs.com:14642/0
       ENVIRONMENT: docker
     command: ["celery", "-A", "app.workers.celery_app.celery_app", "worker", "--loglevel=info"]
     depends_on:
