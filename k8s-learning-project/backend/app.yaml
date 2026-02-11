@@ -3,7 +3,7 @@ env: flex
 service: default
 
 # Override Docker CMD so App Engine uses the runtime-provided PORT.
-entrypoint: /bin/sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"
+# entrypoint: /bin/sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8080}"
 
 manual_scaling:
   instances: 1
