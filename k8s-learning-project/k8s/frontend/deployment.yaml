@@ -19,6 +19,9 @@ spec:
         - name: frontend
           image: ghcr.io/your-org/k8s-learning-frontend:latest
           imagePullPolicy: IfNotPresent
+          env:
+            - name: API_UPSTREAM
+              value: "http://backend-service:80"
           ports:
             - containerPort: 80
               name: http
