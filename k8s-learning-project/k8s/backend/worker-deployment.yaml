@@ -20,7 +20,7 @@ spec:
       serviceAccountName: backend-sa
       containers:
         - name: worker
-          image: ghcr.io/your-org/k8s-learning-backend:latest
+          image: us-central1-docker.pkg.dev/alfahadh-practice/k8s-learning/k8s-learning-backend:latest
           imagePullPolicy: IfNotPresent
           command: ["celery", "-A", "app.workers.celery_app.celery_app", "worker", "--loglevel=info"]
           envFrom:
@@ -30,12 +30,12 @@ spec:
                 name: platform-secrets
           livenessProbe:
             exec:
-              command: ["sh", "-c", "pgrep -f 'celery'"]
+              command: ["sh", "-c", "tr '\\000' ' ' </proc/1/cmdline | grep -q celery"]
             initialDelaySeconds: 20
             periodSeconds: 20
           readinessProbe:
             exec:
-              command: ["sh", "-c", "pgrep -f 'celery'"]
+              command: ["sh", "-c", "tr '\\000' ' ' </proc/1/cmdline | grep -q celery"]
             initialDelaySeconds: 10
             periodSeconds: 15
           resources:

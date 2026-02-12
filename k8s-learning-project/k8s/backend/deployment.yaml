@@ -27,7 +27,7 @@ spec:
       serviceAccountName: backend-sa
       initContainers:
         - name: migrate-db
-          image: ghcr.io/your-org/k8s-learning-backend:latest
+          image: us-central1-docker.pkg.dev/alfahadh-practice/k8s-learning/k8s-learning-backend:latest
           command: ["sh", "-c", "alembic upgrade head"]
           envFrom:
             - configMapRef:
@@ -36,7 +36,7 @@ spec:
                 name: platform-secrets
       containers:
         - name: backend
-          image: ghcr.io/your-org/k8s-learning-backend:latest
+          image: us-central1-docker.pkg.dev/alfahadh-practice/k8s-learning/k8s-learning-backend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000

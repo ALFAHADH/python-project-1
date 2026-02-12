@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ghcr.io/your-org/k8s-learning-frontend:latest
+          image: us-central1-docker.pkg.dev/alfahadh-practice/k8s-learning/k8s-learning-frontend:latest
           imagePullPolicy: IfNotPresent
           env:
             - name: API_UPSTREAM
