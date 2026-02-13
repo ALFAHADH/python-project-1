@@ -7,7 +7,7 @@ metadata:
     app: backend-worker
     tier: backend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend-worker
@@ -33,11 +33,15 @@ spec:
               command: ["sh", "-c", "tr '\\000' ' ' </proc/1/cmdline | grep -q celery"]
             initialDelaySeconds: 20
             periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
           readinessProbe:
             exec:
               command: ["sh", "-c", "tr '\\000' ' ' </proc/1/cmdline | grep -q celery"]
             initialDelaySeconds: 10
             periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
           resources:
             requests:
               cpu: "100m"
