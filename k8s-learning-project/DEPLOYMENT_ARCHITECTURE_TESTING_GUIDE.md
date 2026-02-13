@@ -187,8 +187,8 @@ gcloud artifacts repositories create k8s-learning \
 
 gcloud auth configure-docker us-central1-docker.pkg.dev
 
-BACKEND_IMAGE=us-central1-docker.pkg.dev/<GCP_PROJECT_ID>/k8s-learning/k8s-learning-backend:latest
-FRONTEND_IMAGE=us-central1-docker.pkg.dev/<GCP_PROJECT_ID>/k8s-learning/k8s-learning-frontend:latest
+BACKEND_IMAGE=us-central1-docker.pkg.dev/alfahadh-practice/k8s-learning/k8s-learning-backend:latest
+FRONTEND_IMAGE=us-central1-docker.pkg.dev/alfahadh-practice/k8s-learning/k8s-learning-frontend:latest
 
 docker build -t "$BACKEND_IMAGE" ./backend
 docker build -t "$FRONTEND_IMAGE" ./frontend
