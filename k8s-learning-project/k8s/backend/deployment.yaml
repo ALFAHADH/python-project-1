@@ -28,7 +28,7 @@ spec:
       initContainers:
         - name: migrate-db
           image: us-central1-docker.pkg.dev/alfahadh-practice/k8s-learning/k8s-learning-backend:latest
-          command: ["sh", "-c", "alembic upgrade head"]
+          command: ["python", "-m", "alembic", "upgrade", "head"]
           envFrom:
             - configMapRef:
                 name: backend-config
@@ -38,6 +38,7 @@ spec:
         - name: backend
           image: us-central1-docker.pkg.dev/alfahadh-practice/k8s-learning/k8s-learning-backend:latest
           imagePullPolicy: IfNotPresent
+          command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
           ports:
             - containerPort: 8000
               name: http
